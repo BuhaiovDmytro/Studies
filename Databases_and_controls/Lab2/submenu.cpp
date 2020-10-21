@@ -110,8 +110,6 @@ void generate_menu(PGconn *conn){
     std::cin >> tab_name;
 
     std::cout << "\nInput quantity of rows to generate >> ";
-    std::string num_rows;
-    std::cin >> num_rows;
 
     int num_rows_int = safe_uint_input();
     gen_rand_rows(conn, tab_name, num_rows_int);
