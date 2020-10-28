@@ -4,14 +4,17 @@
 
 #include "psql_getters.h"
 
+#define PG_UNDEFINED_TABLE "42P01"
+#define PG_FOREIGN_KEY_VIOLATION "23503"
+#define PG_UNIQUE_KEY_VIOLATION "23505"
 
 PGconn* psql_init(){
-    
-    PGconn *conn = PQconnectdb("user = postgres password = password host = 127.0.0.1 dbname = postgres");
+    //TODO: Hide password
+    PGconn *conn = PQconnectdb("user = postgres password = kukurudza25 host = 127.0.0.1 dbname = postgres");
 
     if (PQstatus(conn) != CONNECTION_OK)
     {
-        std::cerr << "Connection to database failed: " << PQerrorMessage(conn);
+        std::cerr << "ERROR: No connection to database" ;
         exit_nicely(conn);
     }
 
@@ -79,7 +82,7 @@ std::vector<std::string> get_col_names(PGconn *conn, const std::string& table){
     PGresult *res = PQexec(conn, "BEGIN");
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "BEGIN command failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -91,23 +94,23 @@ std::vector<std::string> get_col_names(PGconn *conn, const std::string& table){
 
     res = PQexec(conn, query.c_str());
 
+    std::vector<std::string> col_names;
+
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "DECLARE CURSOR failed: %s" << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
-        exit_nicely(conn);
+        return col_names;
     }
     PQclear(res);
 
     res = PQexec(conn, "FETCH ALL in myportal");
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        std::cerr << "FETCH ALL failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
-        exit_nicely(conn);
     }
 
-    std::vector<std::string> col_names;
     int nFields = PQnfields(res);
     col_names.reserve(nFields);
     for (int i = 0; i < nFields; i++) {
@@ -125,11 +128,11 @@ std::vector<std::string> get_col_names(PGconn *conn, const std::string& table){
     return col_names;
 }
 
-std::vector<std::string> get_col_types(PGconn *conn, const std::string& table){
+std::vector<std::string> get_col_types(PGconn *conn, const std::string& table){//TODO: ERROR HANDLING
     PGresult *res = PQexec(conn, "BEGIN");
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "BEGIN command failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -146,7 +149,7 @@ std::vector<std::string> get_col_types(PGconn *conn, const std::string& table){
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "DECLARE CURSOR failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -155,7 +158,7 @@ std::vector<std::string> get_col_types(PGconn *conn, const std::string& table){
     res = PQexec(conn, "FETCH ALL in myportal");
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        std::cerr << "FETCH ALL failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, table);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -185,7 +188,7 @@ std::string get_col_type(PGconn *conn, const std::string& col_name){
     PGresult *res = PQexec(conn, "BEGIN");
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "BEGIN command failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -202,7 +205,7 @@ std::string get_col_type(PGconn *conn, const std::string& col_name){
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "DECLARE CURSOR failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -211,7 +214,7 @@ std::string get_col_type(PGconn *conn, const std::string& col_name){
     res = PQexec(conn, "FETCH ALL in myportal");
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        std::cerr << "FETCH ALL failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -235,4 +238,20 @@ bool are_cols_in_tab(PGconn *conn, std::vector<std::string> cols, const std::str
 
     return std::includes(cols_in_tab.begin(), cols_in_tab.end(),
                          cols.begin(), cols.end());
+}
+
+void PG_error_handler(PGconn *conn, PGresult *res, const std::string& tab_name){
+
+    if(strcmp(PQresultErrorField(res, PG_DIAG_SQLSTATE), PG_UNDEFINED_TABLE) == 0){
+        std::cout << "\nERROR: No table with the name \"" << tab_name << "\"";
+    }
+    else if(strcmp(PQresultErrorField(res, PG_DIAG_SQLSTATE), PG_FOREIGN_KEY_VIOLATION) == 0){
+        std::cout << "\nERROR: Some generated fields of \"" << tab_name << "\" do not exist in table it depends on";
+    }
+    else if(strcmp(PQresultErrorField(res, PG_DIAG_SQLSTATE), PG_UNIQUE_KEY_VIOLATION) == 0){
+        std::cout << "\nERROR: Fields of \"" << tab_name << "\" must be unique";
+    }
+    else {
+        std::cerr << PQerrorMessage(conn);
+    }
 }

@@ -30,7 +30,7 @@ void insert_row(PGconn *conn, const std::string& tab_name, const std::vector<std
                        nullptr, nullptr, 0);
 
     if(PQresultStatus(res) != PGRES_COMMAND_OK) {
-        std::cerr << "INSERT INTO failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, tab_name);
     }
     else{
         std::cout << "\nINSERT successful";
@@ -51,7 +51,7 @@ void delete_row(PGconn *conn, const std::string& tab_name, const std::string& co
     PGresult *res = PQexec(conn, query.c_str());
 
     if(PQresultStatus(res) != PGRES_COMMAND_OK) {
-        std::cerr << PQerrorMessage(conn);
+        PG_error_handler(conn, res, tab_name);
     }
 
     PQclear(res);
@@ -75,7 +75,7 @@ void update_row(PGconn *conn, const std::string& tab_name, const std::string& ke
     PGresult *res = PQexec(conn, query.c_str());
 
     if(PQresultStatus(res) != PGRES_COMMAND_OK) {
-        std::cerr << PQerrorMessage(conn);
+        std::cout << "\nERROR: No column \"" << upd_col << "\" in table \"" << tab_name << "\"\n";
     }
     else{
         std::cout << "\nUPDATE " << upd_col << " = " << upd_val <<  " successful";
@@ -114,8 +114,11 @@ void gen_rand_rows(PGconn * conn, const std::string& tab_name, int num_rows){
 
     PGresult *res = PQexec(conn, query.c_str());
 
+    std::cout << "\n" << query << "\n";
+
     if(PQresultStatus(res) != PGRES_COMMAND_OK) {
-        std::cerr << PQerrorMessage(conn);
+
+        PG_error_handler(conn, res, tab_name);
     }
     else{
         std::cout << "\nGenerating " << num_rows << " rows " << "in " << tab_name << " successful";
@@ -129,7 +132,7 @@ std::vector<std::vector<std::string>> search_rows(
     PGresult *res = PQexec(conn, "BEGIN");
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "BEGIN command failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, tab_name);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -142,10 +145,11 @@ std::vector<std::vector<std::string>> search_rows(
 
     res = PQexec(conn, query.c_str());
 
+    std::cout << "\n" << query << "\n";
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        std::cerr << "DECLARE CURSOR failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, tab_name);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -154,7 +158,7 @@ std::vector<std::vector<std::string>> search_rows(
     res = PQexec(conn, "FETCH ALL in myportal");
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        std::cerr << "FETCH ALL failed: " << PQerrorMessage(conn);
+        PG_error_handler(conn, res, tab_name);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -182,5 +186,6 @@ std::vector<std::vector<std::string>> search_rows(
 
     return srch_res;
 }
+
 
 

@@ -15,7 +15,7 @@ int safe_uint_input(){
         if(int_input < 0){
             throw std::invalid_argument(s_input);
         }
-        else return int_input;
+        return int_input;
     }
     catch(std::invalid_argument&){
         std::cout << "\nERROR: Wrong input, must be integer above 0\n";
@@ -39,15 +39,17 @@ void insert_menu(PGconn *conn){
     std::string tab_name, col_val;
     std::cin >> tab_name;
     std::vector<std::string> col_names = get_col_names(conn, tab_name);
-    std::vector<std::string> col_values;
+    if(!col_names.empty()) {
+        std::vector<std::string> col_values;
 
-    for(auto & col_name : col_names){
-        std::cout  << "\nInput " << col_name << " of the " << tab_name << " >> ";
-        std::cin >> col_val;
-        col_values.push_back(col_val);
+        for (auto &col_name : col_names) {
+            std::cout << "\nInput " << col_name << " of the " << tab_name << " >> ";
+            std::cin >> col_val;
+            col_values.push_back(col_val);
+        }
+
+        insert_row(conn, tab_name, col_values);
     }
-
-    insert_row(conn, tab_name, col_values);
 }
 
 void delete_menu(PGconn *conn){
@@ -60,10 +62,12 @@ void delete_menu(PGconn *conn){
     std::string tab_name, del_val;
     std::cin >> tab_name;
     std::vector<std::string> col_names = get_col_names(conn, tab_name);
-    std::cout  << "\nInput " << col_names.front() << " of the " << tab_name << " to delete" << " >> ";
-    std::cin >> del_val;
+    if(!col_names.empty()) {
+        std::cout << "\nInput " << col_names.front() << " of the " << tab_name << " to delete" << " >> ";
+        std::cin >> del_val;
 
-    delete_row(conn, tab_name, col_names.front(), del_val);
+        delete_row(conn, tab_name, col_names.front(), del_val);
+    }
 }
 
 void update_menu(PGconn *conn){
@@ -78,25 +82,27 @@ void update_menu(PGconn *conn){
     std::cin >> tab_name;
 
     std::vector<std::string> col_names = get_col_names(conn, tab_name);
-    std::cout  << "\nInput " << col_names.front() << " of the " << tab_name << " to update" << " >> ";
-    std::string key_val;
-    std::cin >> key_val;
+    if(!col_names.empty()) {
 
-    if(col_names.size() > 2) {
-        std::cout << "\nChoose the column of the " << tab_name << " you want to update:\n";
-        print_vec_str(col_names);
-        std::cout << "\n\n>> ";
-        std::cin >> upd_col;
+        std::cout << "\nInput " << col_names.front() << " of the " << tab_name << " to update" << " >> ";
+        std::string key_val;
+        std::cin >> key_val;
+
+        if (col_names.size() > 2) {
+            std::cout << "\nChoose the column of the " << tab_name << " you want to update:\n";
+            print_vec_str(col_names);
+            std::cout << "\n\n>> ";
+            std::cin >> upd_col;
+        } else {
+            upd_col = col_names.back();
+        }
+
+        std::cout << "\nInput new value of the " << upd_col << " >> ";
+        std::string upd_val;
+        std::cin >> upd_val;
+
+        update_row(conn, tab_name, col_names.front(), key_val, upd_col, upd_val);
     }
-    else{
-        upd_col = col_names.back();
-    }
-
-    std::cout << "\nInput new value of the " << upd_col << " >> ";
-    std::string upd_val;
-    std::cin >> upd_val;
-
-    update_row(conn, tab_name, col_names.front(), key_val, upd_col, upd_val);
 }
 
 void generate_menu(PGconn *conn){
@@ -178,7 +184,7 @@ int search_menu(PGconn *conn){
             subquery.append("' AND ");
         }
         else{
-            std::cerr << "\nERROR: Unknown type: \"" << col_type << "\"\n";
+            std::cout << "\nERROR: Unknown type: \"" << col_type << "\"\n";
         }
     }
     subquery.erase(subquery.size() - 4);//Remove last "AND "
