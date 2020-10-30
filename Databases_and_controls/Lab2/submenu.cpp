@@ -187,36 +187,38 @@ int search_menu(PGconn *conn){
             std::cout << "\nERROR: Unknown type: \"" << col_type << "\"\n";
         }
     }
-    subquery.erase(subquery.size() - 4);//Remove last "AND "
+    subquery.erase(subquery.size() - strlen("AND "));
 
     std::vector<std::string> tab_names = get_tab_names(conn);
 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    std::string query = "DECLARE myportal CURSOR FOR";
     for(auto & tab_name : tab_names) {
 
         if(are_cols_in_tab(conn, srch_col_names, tab_name)) {
-
-            std::vector<std::string> col_names = get_col_names(conn, tab_name);
-            std::vector<std::vector<std::string>> srch_res = search_rows(conn, subquery, tab_name);
-
-            std::cout << "\n";
-            if(!srch_res.empty()) {
-                std::cout << "\nTable: \"" << tab_name << "\"\n\n";
-                for (auto &col_name : col_names) {
-                    std::cout << col_name << "\t\t";
-                }
-                std::cout << "\n\n";
-            }
-
-            for(auto& row : srch_res){
-                for(auto& col : row){
-                    std::cout << col << "\t\t";
-                }
-                std::cout << "\n";
-            }
+            query.append(" SELECT ");
+            query.append(srch_col_names.front());
+            query.append(" FROM ");
+            query.append(tab_name);
+            query.append(" WHERE ");
+            query.append(subquery);
+            query.append(" UNION ALL");
         }
     }
+    query.erase(query.size() - strlen(" UNION ALL"));
+
+    std::cout << "\n" << query << "\n\n";
+    std::cout << srch_col_names.front() << "\n\n";
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    std::vector<std::vector<std::string>> srch_res = search_rows(conn, query);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    for(auto& row : srch_res){
+        for(auto& col : row){
+            std::cout << col << "\t\t";
+                }
+        std::cout << "\n";
+    }
 
     std::cout << "\nTime taken: "
     << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()

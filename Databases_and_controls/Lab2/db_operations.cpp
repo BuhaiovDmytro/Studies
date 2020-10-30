@@ -85,6 +85,7 @@ void update_row(PGconn *conn, const std::string& tab_name, const std::string& ke
 }
 
 void gen_rand_rows(PGconn * conn, const std::string& tab_name, int num_rows){
+
     std::vector<std::string> col_types = get_col_types(conn, tab_name);
 
     std::string query = "INSERT INTO ";
@@ -127,29 +128,21 @@ void gen_rand_rows(PGconn * conn, const std::string& tab_name, int num_rows){
     PQclear(res);
 }
 
-std::vector<std::vector<std::string>> search_rows(
-        PGconn *conn, const std::string& subquery, const std::string& tab_name){
+std::vector<std::vector<std::string>> search_rows(PGconn *conn, const std::string& query){
     PGresult *res = PQexec(conn, "BEGIN");
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        PG_error_handler(conn, res, tab_name);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }
     PQclear(res);
 
-    std::string query = "DECLARE myportal CURSOR FOR SELECT * FROM ";
-    query.append(tab_name);
-    query.append(" WHERE ");
-    query.append(subquery);
-
     res = PQexec(conn, query.c_str());
-
-    std::cout << "\n" << query << "\n";
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {
-        PG_error_handler(conn, res, tab_name);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }
@@ -158,7 +151,7 @@ std::vector<std::vector<std::string>> search_rows(
     res = PQexec(conn, "FETCH ALL in myportal");
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        PG_error_handler(conn, res, tab_name);
+        PG_error_handler(conn, res);
         PQclear(res);
         exit_nicely(conn);
     }

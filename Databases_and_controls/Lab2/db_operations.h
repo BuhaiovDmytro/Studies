@@ -14,7 +14,6 @@ void delete_row(PGconn *conn, const std::string& tab_name, const std::string& co
 void update_row(PGconn *conn, const std::string& tab_name, const std::string& key_col, const std::string& key_val,
                 const std::string& upd_col, const std::string& upd_val);
 void gen_rand_rows(PGconn * conn, const std::string& tab_name, int num_rows);
-std::vector<std::vector<std::string>> search_rows(
-        PGconn *conn, const std::string& subquery, const std::string& tab_name);
+std::vector<std::vector<std::string>> search_rows( PGconn *conn, const std::string& subquery);
 
 #endif //LAB2_DB_OPERATIONS_H
