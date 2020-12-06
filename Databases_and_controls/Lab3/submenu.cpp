@@ -43,6 +43,7 @@ void insert_menu(server_context& ctx){
     std::cin >> tab_name;
 
     if(tab_name == "trolleybus"){
+
         std::cout << "\nInput trolleybus id >> ";
         int tr_id = safe_uint_input();
         std::cout << "\nInput trolleybus capacity >> ";
@@ -51,6 +52,7 @@ void insert_menu(server_context& ctx){
         ctx.insert_row(std::make_shared<trolleybus>(tr_id, tr_capacity));
     }
     else if(tab_name == "depot"){
+
         std::cout << "\nInput depot id >> ";
         int dep_id = safe_uint_input();
 
@@ -61,6 +63,7 @@ void insert_menu(server_context& ctx){
         ctx.insert_row(std::make_shared<depot>(dep_id, dep_addr));
     }
     else if(tab_name == "route"){
+
         std::cout << "\nInput number of the route >> ";
         int route_num = safe_uint_input();
 
@@ -87,17 +90,25 @@ void insert_menu(server_context& ctx){
         ctx.insert_row(std::make_shared<route>(route_num, fin_stops, tr_obj_vec));
     }
     else if(tab_name == "where_serviced") {
+
+        std::cout << "\nInput id of the new row >> ";
+        int row_id = safe_uint_input();
+
         std::cout << "\nInput id of the trolleybus to serve in the depot >> ";
         int tr_id = safe_uint_input();
 
         std::cout << "\nInput id of the depot >> ";
         int dep_id = safe_uint_input();
 
-        ctx.insert_row(std::make_shared<where_serviced>(
+        ctx.insert_row(std::make_shared<where_serviced>(row_id,
                 std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
                         std::make_shared<depot>(dep_id, DEFAULT_ADDRESS)));
     }
     else if(tab_name == "service") {
+
+        std::cout << "\nInput id of the new row >> ";
+        int row_id = safe_uint_input();
+
         std::cout << "\nInput id of the trolleybus >> ";
         int tr_id = safe_uint_input();
 
@@ -108,7 +119,7 @@ void insert_menu(server_context& ctx){
         std::cout << "\nInput year of the next service >> ";
         int y_input = safe_uint_input();
 
-        ctx.insert_row(std::make_shared<service>(
+        ctx.insert_row(std::make_shared<service>(row_id,
                 std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
                 boost::gregorian::date(y_input,m_input,d_input)));
     }
@@ -162,5 +173,96 @@ void delete_menu(server_context& ctx){
 }
 
 void update_menu(server_context& ctx){
+    std::cout << "\nChoose the table you want to update the row:\n\n";
 
+    print_vec_str(db_tab_names);
+
+    std::cout << "\n>> ";
+    std::string tab_name;
+    std::cin >> tab_name;
+
+    if(tab_name == "trolleybus"){
+
+        std::cout << "\nInput trolleybus id to update>> ";
+        int tr_id = safe_uint_input();
+        std::cout << "\nInput new trolleybus capacity >> ";
+        int tr_capacity = safe_uint_input();
+
+        ctx.update_row(std::make_shared<trolleybus>(tr_id, tr_capacity));
+    }
+    else if(tab_name == "depot"){
+
+        std::cout << "\nInput depot id to update>> ";
+        int dep_id = safe_uint_input();
+
+        std::cout << "\nInput  new depot address >> ";
+        std::string dep_addr;
+        std::cin >> dep_addr;
+
+        ctx.update_row(std::make_shared<depot>(dep_id, dep_addr));
+    }
+    else if(tab_name == "route"){
+
+        std::cout << "\nInput number of the route to update>> ";
+        int route_num = safe_uint_input();
+
+        std::cout << "\nInput new final stops >> ";
+        std::string fin_stops;
+        std::cin >> fin_stops;
+
+        std::cout << "\nInput new quantity of trolleybuses to serve the route >> ";
+        int tr_num = safe_uint_input();
+
+        std::vector<int> tr_ids;
+        int input;
+        for(int i = 1; i <= tr_num; i++){
+            std::cout << "\nInput new id of trolleybus to serve the route (" << i << "/"<< tr_num << ") >> ";
+            input = safe_uint_input();
+            tr_ids.push_back(input);
+        }
+
+        std::vector<std::shared_ptr<trolleybus>> tr_obj_vec;
+        tr_obj_vec.reserve(tr_ids.size());
+        for(auto & tr_id : tr_ids){
+            tr_obj_vec.push_back(std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY));
+        }
+        ctx.update_row(std::make_shared<route>(route_num, fin_stops, tr_obj_vec));
+    }
+    else if(tab_name == "where_serviced") {
+
+        std::cout << "\nInput id of the row to edit >> ";
+        int row_id = safe_uint_input();
+
+        std::cout << "\nInput id of the new trolleybus to serve in the depot >> ";
+        int tr_id = safe_uint_input();
+
+        std::cout << "\nInput id of the new depot >> ";
+        int dep_id = safe_uint_input();
+
+        ctx.update_row(std::make_shared<where_serviced>(row_id,
+                std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
+                std::make_shared<depot>(dep_id, DEFAULT_ADDRESS)));
+    }
+    else if(tab_name == "service") {
+
+        std::cout << "\nInput id of the row to update>> ";
+        int row_id = safe_uint_input();
+
+        std::cout << "\nInput id of the new trolleybus >> ";
+        int tr_id = safe_uint_input();
+
+        std::cout << "\nInput new day of the next service >> ";
+        int d_input = safe_uint_input();
+        std::cout << "\nInput new month of the next service >> ";
+        int m_input = safe_uint_input();
+        std::cout << "\nInput new year of the next service >> ";
+        int y_input = safe_uint_input();
+
+        ctx.update_row(std::make_shared<service>(row_id,
+                std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
+                boost::gregorian::date(y_input,m_input,d_input)));
+    }
+    else{
+        std::cout << "\nError: No such table\n";
+    }
 }

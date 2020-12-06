@@ -12,50 +12,11 @@
 #define DEFAULT_CAPACITY 0
 #define DEFAULT_ADDRESS ""
 
-class depot;
 class trolleybus;
+class depot;
 class route;
 class where_serviced;
 class service;
-
-#pragma db object session
-class depot
-{
-public:
-    depot (const unsigned long& id,
-           const std::string& address)
-      : id_(id), address_ (address)
-  {
-  }
-
-  const unsigned long& id () const
-  {
-    return id_;
-  }
-
-  const std::string& address () const
-  {
-    return address_;
-  }
-
-  void address (const std::string& address)
-  {
-        address_ = address;
-  }
-
-private:
-  friend class odb::access;
-
-    depot () {}
-
-  std::string address_;
-
-#pragma db id
-    unsigned long id_;
-
-#pragma db value_not_null inverse(depot_id_)
-    std::weak_ptr<where_serviced> where_serviced_;
-};
 
 #pragma db object session
 class trolleybus
@@ -111,6 +72,45 @@ private:
 
 };
 
+#pragma db object session
+class depot
+{
+public:
+    depot (const unsigned long& id,
+           const std::string& address)
+            : id_(id), address_ (address)
+    {
+    }
+
+    const unsigned long& id () const
+    {
+        return id_;
+    }
+
+    const std::string& address () const
+    {
+        return address_;
+    }
+
+    void address (const std::string& address)
+    {
+        address_ = address;
+    }
+
+private:
+    friend class odb::access;
+
+    depot () {}
+
+    std::string address_;
+
+#pragma db id
+    unsigned long id_;
+
+#pragma db value_not_null inverse(depot_id_)
+    std::weak_ptr<where_serviced> where_serviced_;
+};
+
 #pragma db object session pointer(std::shared_ptr)
 class route
 {
@@ -160,13 +160,19 @@ private:
 class where_serviced
 {
 public:
-    where_serviced (
+    where_serviced (const unsigned long id,
             const std::shared_ptr<trolleybus>& trolleybus_id,
            const std::shared_ptr<depot>& depot_id)
             :
+            id_(id),
             trolleybus_id_ (trolleybus_id),
             depot_id_ (depot_id)
     {
+    }
+
+    const unsigned long& id () const
+    {
+        return id_;
     }
 
     const std::shared_ptr<trolleybus>& trolleybus_id () const
@@ -189,7 +195,7 @@ private:
 
     where_serviced () {}
 
-#pragma db id auto
+#pragma db id
     unsigned long id_;
 
 #pragma db not_null
@@ -204,13 +210,18 @@ private:
 class service
 {
 public:
-    service (
+    service ( const unsigned long& id,
             const std::shared_ptr<trolleybus>& trolleybus_id,
             const boost::gregorian::date& next)
             :
+            id_(id),
             trolleybus_id_ (trolleybus_id),
             next_ (next)
     {
+    }
+    const unsigned long& id () const
+    {
+        return id_;
     }
 
     const std::shared_ptr<trolleybus>& trolleybus_id () const
@@ -233,7 +244,7 @@ private:
 
     service () {}
 
-#pragma db id auto
+#pragma db id
     unsigned long id_;
 
 #pragma db not_null
