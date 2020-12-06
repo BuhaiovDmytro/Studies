@@ -48,7 +48,7 @@ void insert_menu(server_context& ctx){
         std::cout << "\nInput trolleybus capacity >> ";
         int tr_capacity = safe_uint_input();
 
-        ctx.insert(std::make_shared<trolleybus>(tr_id, tr_capacity));
+        ctx.insert_row(std::make_shared<trolleybus>(tr_id, tr_capacity));
     }
     else if(tab_name == "depot"){
         std::cout << "\nInput depot id >> ";
@@ -58,7 +58,7 @@ void insert_menu(server_context& ctx){
         std::string dep_addr;
         std::cin >> dep_addr;
 
-        ctx.insert(std::make_shared<depot>(dep_id, dep_addr));
+        ctx.insert_row(std::make_shared<depot>(dep_id, dep_addr));
     }
     else if(tab_name == "route"){
         std::cout << "\nInput number of the route >> ";
@@ -84,7 +84,7 @@ void insert_menu(server_context& ctx){
         for(auto & tr_id : tr_ids){
             tr_obj_vec.push_back(std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY));
         }
-        ctx.insert(std::make_shared<route>(route_num, fin_stops, tr_obj_vec));
+        ctx.insert_row(std::make_shared<route>(route_num, fin_stops, tr_obj_vec));
     }
     else if(tab_name == "where_serviced") {
         std::cout << "\nInput id of the trolleybus to serve in the depot >> ";
@@ -93,7 +93,7 @@ void insert_menu(server_context& ctx){
         std::cout << "\nInput id of the depot >> ";
         int dep_id = safe_uint_input();
 
-        ctx.insert(std::make_shared<where_serviced>(
+        ctx.insert_row(std::make_shared<where_serviced>(
                 std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
                         std::make_shared<depot>(dep_id, DEFAULT_ADDRESS)));
     }
@@ -108,7 +108,7 @@ void insert_menu(server_context& ctx){
         std::cout << "\nInput year of the next service >> ";
         int y_input = safe_uint_input();
 
-        ctx.insert(std::make_shared<service>(
+        ctx.insert_row(std::make_shared<service>(
                 std::make_shared<trolleybus>(tr_id, DEFAULT_CAPACITY),
                 boost::gregorian::date(y_input,m_input,d_input)));
     }
@@ -118,7 +118,47 @@ void insert_menu(server_context& ctx){
 }
 
 void delete_menu(server_context& ctx){
+    std::cout << "\nChoose the table you want to delete the row:\n\n";
 
+    print_vec_str(db_tab_names);
+
+    std::cout << "\n>> ";
+    std::string tab_name;
+    std::cin >> tab_name;
+
+    if(tab_name == "trolleybus"){
+        std::cout << "\nInput trolleybus id >> ";
+        unsigned long tr_id = safe_uint_input();
+
+        ctx.delete_row<trolleybus>(tr_id);
+    }
+    else if(tab_name == "depot"){
+        std::cout << "\nInput depot id >> ";
+        unsigned long dep_id = safe_uint_input();
+
+        ctx.delete_row<depot>(dep_id);
+    }
+    else if(tab_name == "route"){
+        std::cout << "\nInput rote number >> ";
+        unsigned long route_num = safe_uint_input();
+
+        ctx.delete_row<route>(route_num);
+    }
+    else if(tab_name == "where_serviced") {
+        std::cout << "\nInput row id >> ";
+        unsigned long row_id = safe_uint_input();
+
+        ctx.delete_row<where_serviced>(row_id);
+    }
+    else if(tab_name == "service") {
+        std::cout << "\nInput row id >> ";
+        unsigned long row_id = safe_uint_input();
+
+        ctx.delete_row<service>(row_id);
+    }
+    else{
+        std::cout << "\nError: No such table\n";
+    }
 }
 
 void update_menu(server_context& ctx){

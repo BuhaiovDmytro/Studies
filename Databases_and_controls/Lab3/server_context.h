@@ -12,13 +12,19 @@ public:
     {}
 
     template< typename OdbT >
-    void insert( const std::shared_ptr< OdbT >& obj )
+    void insert_row( const std::shared_ptr< OdbT >& obj )
     {
         tr_.database().persist( *obj );
     }
 
     template< typename OdbT >
-    void update( const std::shared_ptr< OdbT >& obj )
+    void delete_row( const unsigned long& id)
+    {
+        tr_.database().erase<OdbT>( id );
+    }
+
+    template< typename OdbT >
+    void update_row( const std::shared_ptr< OdbT >& obj )
     {
         tr_.database().update( *obj );
     }
