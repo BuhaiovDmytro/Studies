@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign in</title>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script type = "module" src="../js/main.js"></script>
+</head>
+
+<link rel="stylesheet" href="../css/styles.css">
+
+<body>
+
+<label class="mdc-top-app-bar__title">Sign in</label>
+
+<label class="mdc-text-field mdc-text-field--outlined">
+  <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+      <span class="mdc-floating-label" id="sign_in_email">Email</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+    <input type="text" class="mdc-text-field__input" aria-labelledby="sign_in_email" id="email_field">
+</label>
+
+<label class="mdc-text-field mdc-text-field--outlined">
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+    <span class="mdc-floating-label" id="my-label-id">Password</span>
+        </span>
+    <span class="mdc-notched-outline__trailing"></span>
+        </span>
+    <input class="mdc-text-field__input" type="password" aria-labelledby="my-label-id" required minlength="8"
+           id="password_field">
+</label>
+
+<button class="mdc-button foo-button" id = "signinbutton">
+    <div class="mdc-button__ripple"></div>
+    <span class="mdc-button__label">Sign in</span>
+</button>
+
+<label class="mdc-top-app-bar__title">New to poll.com? Sign up <a href="signup.html">here</a></label>
+
+</body>
+</html>
+

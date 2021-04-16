@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Poll</title>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script type = "module" src="../js/main.js"></script>
+</head>
+
+<link rel="stylesheet" href="../css/poll_styles.css">
+
+<body>
+
+<div class="mdc-tab-bar" role="tablist">
+    <div class="mdc-tab-scroller">
+        <div class="mdc-tab-scroller__scroll-area">
+            <div class="mdc-tab-scroller__scroll-content">
+                <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0" id = "poll_btn">
+          <span class="mdc-tab__content">
+            <span class="mdc-tab__icon material-icons" aria-hidden="true">poll</span>
+          </span>
+                    <span class="mdc-tab-indicator mdc-tab-indicator--active">
+            <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+          </span>
+                    <span class="mdc-tab__ripple"></span>
+                </button>
+            </div>
+
+            <div class="mdc-tab-scroller__scroll-content">
+                <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0" id = "profile_btn">
+          <span class="mdc-tab__content">
+            <span class="mdc-tab__icon material-icons" aria-hidden="true">profile</span>
+          </span>
+                    <span class="mdc-tab-indicator mdc-tab-indicator--active">
+            <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+          </span>
+                    <span class="mdc-tab__ripple"></span>
+                </button>
+            </div>
+
+            <div class="mdc-tab-scroller__scroll-content">
+                <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0" id = "about_btn">
+          <span class="mdc-tab__content">
+            <span class="mdc-tab__icon material-icons" aria-hidden="true">about</span>
+          </span>
+                    <span class="mdc-tab-indicator mdc-tab-indicator--active">
+            <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+          </span>
+                    <span class="mdc-tab__ripple"></span>
+                </button>
+            </div>
+
+            <div class="mdc-tab-scroller__scroll-content">
+                <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0" id="signout_btn">
+          <span class="mdc-tab__content">
+            <span class="mdc-tab__icon material-icons" aria-hidden="true">sign out</span>
+          </span>
+                    <span class="mdc-tab-indicator mdc-tab-indicator--active">
+            <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+          </span>
+                    <span class="mdc-tab__ripple"></span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<label class="mdc-top-app-bar__title">CREATE NEW POLL</label>
+
+<div>
+
+<label class="mdc-text-field mdc-text-field--outlined">
+
+  <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+      <span class="mdc-floating-label" id="question" >Your question</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+    <input type="text" class="mdc-text-field__input" aria-labelledby="question" id = "question_inp">
+
+</label>
+
+<label class="mdc-text-field mdc-text-field--outlined">
+
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+      <span class="mdc-floating-label" id="ans_1" >Answer 1</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+    <input type="text" class="mdc-text-field__input" aria-labelledby="ans_1" id = "ans1_inp">
+
+</label>
+
+<label class="mdc-text-field mdc-text-field--outlined">
+
+    <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__notch">
+      <span class="mdc-floating-label" id="ans_2" >Answer 2</span>
+    </span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+    <input type="text" class="mdc-text-field__input" aria-labelledby="ans_2" id = "ans2_inp">
+
+</label>
+
+    <button class="mdc-button foo-button" id = "publish_btn">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Publish</span>
+    </button>
+
+</div>
+
+<label class="mdc-top-app-bar__title">POLL LIST</label>
+
+</body>
+</html>
