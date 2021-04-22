@@ -1,6 +1,8 @@
 import View from "./view.js";
+import Controller from "./controller.js"
 
 let new_view = new View();
+let ctrl = new Controller();
 
 const poll_btn = document.getElementById('poll_btn');
 const about_btn = document.getElementById('about_btn');
@@ -48,7 +50,7 @@ if(profile_btn) {
 if(signup_btn) {
     signup_btn.addEventListener('click', {
         handleEvent: function (event) {
-            new_view.signup();
+            ctrl.signup();
         }
     });
 }
@@ -56,7 +58,7 @@ if(signup_btn) {
 if(signin_btn) {
     signin_btn.addEventListener('click', {
         handleEvent: function (event) {
-            new_view.signin_onclick();
+            ctrl.signin_onclick();
         }
     });
 }
@@ -71,7 +73,7 @@ if(publish_btn) {
                 vote_btn.addEventListener('click', {
                     handleEvent: function (event) {
 
-                        new_view.vote(poll_id);
+                        new_view.vote(poll_id, ctrl.get_vote());
                     }
                 });
                 vote_btns.push(vote_btn);
@@ -83,7 +85,7 @@ if(profie_load) {
     profie_load.addEventListener('mousemove', {
         handleEvent: function (event) {
 
-            new_view.view_profile();
+            new_view.view_profile(ctrl.get_user());
         }
     });
 }

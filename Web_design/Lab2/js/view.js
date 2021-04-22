@@ -1,5 +1,3 @@
-import Controller from "./controller.js";
-import User from "./model.js";
 
 export default class View {
 
@@ -7,23 +5,21 @@ export default class View {
         this.poll_counter = 0;
     }
 
-    view_profile() {
+    view_profile(cur_user) {
 
-        let ctrl = new Controller();
         var xhr = new XMLHttpRequest();
         xhr.open('GET', "profile.html", true);
         xhr.onreadystatechange = function () {
             if (this.readyState !== 4) return;
             if (this.status !== 200) return;
-            document.getElementById("tab_name").innerHTML = ctrl.getCookie("name_");
-            document.getElementById("tab_email").innerHTML = ctrl.getCookie("email_");
-            document.getElementById("tab_sex").innerHTML = ctrl.getCookie("sex");
-            document.getElementById("tab_birthday").innerHTML = ctrl.getCookie("birthday");
+            document.getElementById("tab_name").innerHTML = cur_user.name;
+            document.getElementById("tab_email").innerHTML = cur_user.email;
+            document.getElementById("tab_sex").innerHTML = cur_user.sex;
+            document.getElementById("tab_birthday").innerHTML = cur_user.birthday;
 
-            var sp1 = document.createElement(ctrl.getCookie("birthday"));
+            var sp1 = document.createElement(cur_user.birthday);
 
             document.replaceChild(document.getElementById("tab_birthday"), sp1);
-            alert("D");
         };
 
         xhr.send();
@@ -77,31 +73,13 @@ export default class View {
         return poll_id;
     }
 
-    vote(poll_id) {
+    vote(poll_id, vote) {
 
-        var radios = document.getElementsByName('radios');
-
-        for (var i = 0, length = radios.length; i < length; i++) {
-            if (radios[i].checked) {
+            if (vote !== '') {
 
                 document.getElementById(poll_id).innerHTML =
-                    '<label class="mdc-top-app-bar__title">You voted "' + radios[i].id + '"</label>';
+                    '<label class="mdc-top-app-bar__title">You voted "' + vote + '"</label>';
             }
-        }
-
-    }
-
-    signin_onclick() {
-
-        let ctrl = new Controller();
-
-        if (ctrl.getCookie("email_") === document.getElementById('email_field').value &&
-            ctrl.getCookie("password") === document.getElementById('password_field').value) {
-
-            window.open('poll.html', "_self");
-        } else {
-            alert("Incorrect login or password");
-        }
     }
 
    about() {
@@ -122,20 +100,6 @@ export default class View {
     signout() {
 
         window.open('signin.html', "_self");
-    }
-
-    signup() {
-
-        let ctrl = new Controller();
-        let new_user = new User(document.getElementById('name_inp').value,
-            document.getElementById('email_inp').value,
-            ctrl.get_gender(),
-            document.getElementById('bd_inp').value,
-            document.getElementById('pass_inp').value);
-
-        new_user.add_user();
-
-        window.open('poll.html', "_self");
     }
 
     }
