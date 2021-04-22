@@ -7,7 +7,7 @@
 
 
 ### Посилання на звіт:
-https://docs.google.com/document/d/1bSePvkTIG3bFk6j43Lmj7awaABj863BP0c9UmXuJx48/edit?usp=sharing
+https://docs.google.com/document/d/1rtwTO0kBTdyzNc9KSScoLAuTVmhDd9QAfcff9StAqfQ/edit?usp=sharing
 
 ### Виконав:
 Бугайов Д.С. КВ-84
